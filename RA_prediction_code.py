@@ -3,11 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import preprocessing, linear_model, metrics
-from sklearn.linear_model import LinearRegression, Lasso
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.datasets import load_digits
-from sklearn.feature_selection import SelectKBest, f_regression
-from sklearn.metrics import accuracy_score
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import statsmodels.api as sm
 from scipy import stats
