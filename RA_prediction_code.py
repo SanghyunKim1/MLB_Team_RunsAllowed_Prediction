@@ -29,6 +29,8 @@ pitching_2012 = pd.read_csv('/Users/sanghyunkim/Desktop/Data Science Project/MLB
 pitching_2011 = pd.read_csv('/Users/sanghyunkim/Desktop/Data Science Project/MLB Analysis/MLB_Team_RunsAllowed_Prediction/data/pitching_2011.csv')
 pitching_2010 = pd.read_csv('/Users/sanghyunkim/Desktop/Data Science Project/MLB Analysis/MLB_Team_RunsAllowed_Prediction/data/pitching_2010.csv')
 
+
+### 1. Data Cleaning ###
 # merge datasets
 pitching_dfs = [pitching_2019, pitching_2018, pitching_2017, pitching_2016, pitching_2015,
                 pitching_2014, pitching_2013, pitching_2012, pitching_2011, pitching_2010]
@@ -48,11 +50,8 @@ print(pitching_df.isnull().sum())
 # check duplicates
 print("Total Number of Duplicates in Pitching Data: {}".format(pitching_df.duplicated().sum()))
 
-# save merged data as files
-# pitching_df.to_csv('pitching_2010s.csv', float_format='%.3f')
 
-########### Pitching Data Analysis #############
-# IDA (Initial Data Analysis)
+### 2. EDA (Exploratory Data Analysis) ###
 print("------- Pitching Data Descriptive Summary -------")
 print(pitching_df.describe().to_string())
 
