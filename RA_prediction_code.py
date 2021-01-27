@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectKBest, f_regression
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import statsmodels.api as sm
 from scipy import stats
@@ -243,158 +244,159 @@ vif['Feature'] = lm.exog_names
 vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
 print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
 
-# exclude 'DRA-'
-x = df.drop(['RA', 'DRA-'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
 
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'cFIP_START' and 'DRA_START'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'PWARP'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'FIP'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'ERA'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'DRA'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'DRA'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'cFIP'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'DRA', 'cFIP'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# include 'DRA' again
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'cFIP'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'DRA' and include 'ERA' again
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'DRA', 'cFIP'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-# exclude 'ERA' and 'PA'
-x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'DRA', 'cFIP', 'ERA', 'PA'], axis=1)
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-
-x = df[['WHIP', 'HR9', 'PA']]
-x = sm.add_constant(x)
-y = df['RA']
-
-lm = sm.OLS(y, x)
-result = lm.fit()
-print(result.summary())
-
-vif = pd.DataFrame()
-vif['Feature'] = lm.exog_names
-vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+# # exclude 'DRA-'
+# x = df.drop(['RA', 'DRA-'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'cFIP_START' and 'DRA_START'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'PWARP'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'FIP'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'ERA'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'DRA'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'DRA'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'cFIP'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'DRA', 'cFIP'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # include 'DRA' again
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'cFIP'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'DRA' and include 'ERA' again
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'DRA', 'cFIP'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# # exclude 'ERA' and 'PA'
+# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'DRA', 'cFIP', 'ERA', 'PA'], axis=1)
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+#
+# x = df[['WHIP', 'HR9', 'PA']]
+# x = sm.add_constant(x)
+# y = df['RA']
+#
+# lm = sm.OLS(y, x)
+# result = lm.fit()
+# print(result.summary())
+#
+# vif = pd.DataFrame()
+# vif['Feature'] = lm.exog_names
+# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
 
 
 
