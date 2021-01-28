@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.feature_selection import RFE, SelectKBest, f_regression
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import statsmodels.api as sm
 from scipy import stats
@@ -134,30 +134,40 @@ ax.set_title('Yearly Changes in Team Runs Allowed')
 plt.show()
 
 # correlation matrix
-corr = pitching_df.corr()
+corrMatrix= pitching_df.corr()
 fig, ax = plt.subplots(figsize=(10, 10))
 
-sns.heatmap(corr, square=True, cmap='YlGnBu', vmax=1, vmin=-1, ax=ax)
+sns.heatmap(corrMatrix, square=True, cmap='YlGnBu', vmax=1, vmin=-1, ax=ax)
 ax.set_title('Correlation Matrix')
 
 plt.show()
 
-print(corr.to_string())
+print(corrMatrix.to_string())
 
-# drop variables that have lower correlations with 'RA' than 0.65
-corr = abs(pitching_df.corr())
-corr_df = corr['RA'].to_frame(name='Correlation with RA').T
-corr_cols = corr_df.columns
 
-corr_df.drop(columns=corr_cols[(corr_df < 0.65).any()], inplace=True)
-print(corr_df.to_string())
+# feature selection: filter method
+# drop independent variables if its correlation between other independent variables are higher than 0.95
+corrMatrix = abs(pitching_df.corr())
+upperTri = corrMatrix.where(np.triu(np.ones(corrMatrix.shape), k=1).astype(np.bool))
+vars_drop = [col for col in upperTri.columns if any(upperTri[col] > 0.95)]
 
-selected_cols = list(corr_df.columns)
-pitching_df = pitching_df[selected_cols]
-print(pitching_df.head().to_string())
+df = pitching_df.drop(vars_drop, axis=1)
+
+# drop variables that have lower correlation with 'RA' than 0.65
+corrMatrix = abs(df.corr())
+cols = list(corrMatrix.columns)
+for col in cols:
+    if corrMatrix[col]['RA'] < 0.65:
+        vars_drop = col
+        df.drop(vars_drop, axis=1, inplace=True)
+
+filtered_vars = list(df.columns)
+print('Filtered Features: {}'.format(filtered_vars))
+
+df = df[filtered_vars]
 
 # new correlation matrix for selected data features
-corr = pitching_df.corr()
+corr = df.corr()
 fig, ax = plt.subplots(figsize=(10, 10))
 
 sns.heatmap(corr, square=True, annot=True, annot_kws={'size':10}, cmap='YlGnBu',
@@ -170,29 +180,29 @@ plt.show()
 
 # independent variables EDA
 # histograms
-cols = pitching_df.drop(['RA'], axis=1)
-fig, axes = plt.subplots(4, 3, figsize=(20, 20))
+cols = df.drop(['RA'], axis=1)
+fig, axes = plt.subplots(3, 3, figsize=(15, 15))
 
-for col, ax in zip(cols, axes.flatten()[:11]):
-    sns.histplot(pitching_df[col], kde=True, color='blue', ax=ax)
+for col, ax in zip(cols, axes.flatten()[:8]):
+    sns.histplot(df[col], kde=True, color='blue', ax=ax)
     ax.set_title('Team {} Histogram'.format(col))
 
 plt.show()
 
 # Q-Q plots
-fig, axes = plt.subplots(4, 3, figsize=(21, 21))
+fig, axes = plt.subplots(3, 3, figsize=(15, 15))
 
-for col, ax in zip(cols, axes.flatten()[:11]):
-    stats.probplot(pitching_df[col], plot=ax)
+for col, ax in zip(cols, axes.flatten()[:8]):
+    stats.probplot(df[col], plot=ax)
     ax.set_title('{} Q-Q Plot'.format(col))
 
 plt.show()
 
 # scatter plots
-fig, axes = plt.subplots(4, 3, figsize=(20, 20))
+fig, axes = plt.subplots(3, 3, figsize=(15, 15))
 
-for col, ax in zip(cols, axes.flatten()[:11]):
-    sns.regplot(x=col, y='RA', data=pitching_df,
+for col, ax in zip(cols, axes.flatten()[:8]):
+    sns.regplot(x=col, y='RA', data=df,
                 scatter_kws={'color':'navy'}, line_kws={'color':'red'}, ax=ax)
     ax.set_title('Correlation between Team {} and RA'.format(col))
 
@@ -201,17 +211,16 @@ plt.show()
 
 
 ### 3. Feature Scaling ###
-
 print('------- Pitching Statistics Descriptive Summary -------')
 print(pitching_df.describe().to_string())
 # since data ranges vary considerably scale them using StandardScaler
 
 # StandardScaler
-df = pitching_df.drop(['RA'], axis=1)
-cols = list(df.columns)
+scaled_df = df.drop(['RA'], axis=1)
+cols = list(scaled_df.columns)
 
 std_scaler = StandardScaler()
-scaled_data = std_scaler.fit_transform(df)
+scaled_data = std_scaler.fit_transform(scaled_df)
 scaled_df = pd.DataFrame(scaled_data, columns=cols)
 
 # KDE plot after Scaling
@@ -230,7 +239,8 @@ plt.show()
 
 ### 4. Multiple Linear Regression with feature selection
 df = pd.concat([pitching_df['RA'], scaled_df], axis=1)
-x = df.drop(['RA'], axis=1)
+
+x = df.iloc[:, df.columns != 'RA']
 x = sm.add_constant(x)
 y = df['RA']
 
@@ -244,189 +254,125 @@ vif['Feature'] = lm.exog_names
 vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
 print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
 
+# Recursive Feature Elimination
+cols = list(x.columns)
+lm = LinearRegression()
 
-# # exclude 'DRA-'
-# x = df.drop(['RA', 'DRA-'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'cFIP_START' and 'DRA_START'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'PWARP'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'FIP'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'ERA'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'DRA'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'DRA'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'cFIP'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'DRA', 'cFIP'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # include 'DRA' again
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'ERA', 'cFIP'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'DRA' and include 'ERA' again
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'DRA', 'cFIP'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# # exclude 'ERA' and 'PA'
-# x = df.drop(['RA', 'DRA-', 'cFIP_START', 'DRA_START', 'PWARP', 'FIP', 'DRA', 'cFIP', 'ERA', 'PA'], axis=1)
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
-#
-# x = df[['WHIP', 'HR9', 'PA']]
-# x = sm.add_constant(x)
-# y = df['RA']
-#
-# lm = sm.OLS(y, x)
-# result = lm.fit()
-# print(result.summary())
-#
-# vif = pd.DataFrame()
-# vif['Feature'] = lm.exog_names
-# vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
-# print(vif[vif['Feature'] != 'const'].sort_values('VIF', ascending=False))
+rfe = RFE(lm, 2)
+x_rfe = rfe.fit_transform(x, y)
+lm.fit(x_rfe, y)
+temp = pd.Series(rfe.support_, index=cols)
+selected_vars = list(temp[temp == True].index)
+
+print('Selected Features: {}'.format(selected_vars))
+
+# check VIF
+x = df[selected_vars]
+x = sm.add_constant(x)
+y = df['RA']
+
+lm = sm.OLS(y, x)
+result = lm.fit()
+print(result.summary())
+
+vif = pd.DataFrame()
+vif['Feature'] = lm.exog_names
+vif['VIF'] = [variance_inflation_factor(lm.exog, i) for i in range(lm.exog.shape[1])]
+print(vif[vif['Feature'] != 'const'])
+
+# split data into training (70%) and test(30%) data
+# multiple linear regression (x: 'WHIP', 'HR9' / y: 'RA')
+x = df[selected_vars]
+y = df['RA']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+
+lm = linear_model.LinearRegression().fit(x_train, y_train)
+y_predict = lm.predict(x_test)
+
+print('------- Multiple Linear Regression -------')
+print('------- Intercept -------')
+print(lm.intercept_)
+
+print('------- Coefficient -------')
+print(lm.coef_)
+
+print('------- R-squared -------')
+print(metrics.r2_score(y_test, y_predict))
+
+print('------- RMSE -------')
+mse = metrics.mean_squared_error(y_test, y_predict)
+print(sqrt(mse))
 
 
 
+### 5. Simple Linear Regression ###
+# univariate feature selection
+x = pitching_df.iloc[:, pitching_df.columns != 'RA']
+y = pitching_df['RA']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+
+selector = SelectKBest(score_func=f_regression, k=1)
+selected_xTrain = selector.fit_transform(x_train, y_train)
+selected_xTest = selector.transform(x_test)
+
+all_cols = x.columns
+selected_mask = selector.get_support()
+selected_var = all_cols[selected_mask].values
+
+print('Selected Feature: {}'.format(selected_var))
+
+# simple linear regression (x: 'ERA' / y: 'RA')
+x = pitching_df[selected_var]
+y = pitching_df['RA']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+
+lm = linear_model.LinearRegression().fit(x_train, y_train)
+y_predict = lm.predict(x_test)
+
+print('------- Simple Linear Regression -------')
+print('------- Intercept -------')
+print(lm.intercept_)
+
+print('------- Coefficient -------')
+print(lm.coef_)
+
+print('------- R-squared -------')
+print(metrics.r2_score(y_test, y_predict))
+
+print('------- RMSE -------')
+mse = metrics.mean_squared_error(y_test, y_predict)
+print(sqrt(mse))
 
 
-# x = np.array(pitching_df['ERA']).reshape(-1, 1)
-# y = pitching_df['RA']
-#
-# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
-#
-# lm = linear_model.LinearRegression().fit(x_train, y_train)
-# y_predicted = lm.predict(x_test)
-#
-# print('------- Intercept -------')
-# print(lm.intercept_)
-#
-# print('------- Coefficient -------')
-# print(lm.coef_)
-#
-# print('------- RMSE -------')
-# mse = metrics.mean_squared_error(y_test, y_predicted)
-# print(sqrt(mse))
-#
-# print('------- R-squared -------')
-# print(metrics.r2_score(y_test, y_predicted))
-#
-# model = LinearRegression()
-# cv_r2 = cross_val_score(model, x, y, scoring='r2', cv=10)
-# cv_mse = cross_val_score(model, x, y, scoring='neg_mean_squared_error', cv=10)
-# cv_rmse = np.sqrt(-1 * cv_mse)
-# print('Mean R-squared: {}'.format(cv_r2.mean()))
-# print('Mean RMSE: {}'.format(cv_rmse.mean()))
 
+### 6. Model Validation
+# 10-Fold Cross Validation for the multiple linear regression model
+model = LinearRegression()
+
+x = df[selected_vars]
+y = df['RA']
+
+cv_r2 = cross_val_score(model, x, y, scoring='r2', cv=10)
+cv_mse = cross_val_score(model, x, y, scoring='neg_mean_squared_error', cv=10)
+cv_rmse = np.sqrt(-1 * cv_mse)
+
+print('------- Multiple Linear Regression Validation -------')
+print('Mean R-squared: {}'.format(cv_r2.mean()))
+print('Mean RMSE: {}'.format(cv_rmse.mean()))
+
+# 10-Fold Cross Validation for the simple linear regression model
+model = LinearRegression()
+
+x = pitching_df[selected_var]
+y = pitching_df['RA']
+
+cv_r2 = cross_val_score(model, x, y, scoring='r2', cv=10)
+cv_mse = cross_val_score(model, x, y, scoring='neg_mean_squared_error', cv=10)
+cv_rmse = np.sqrt(-1 * cv_mse)
+
+print('------- Simple Linear Regression Validation -------')
+print('Mean R-squared: {}'.format(cv_r2.mean()))
+print('Mean RMSE: {}'.format(cv_rmse.mean()))
