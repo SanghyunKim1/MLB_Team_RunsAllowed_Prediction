@@ -104,7 +104,7 @@ print(pitching_df.describe().to_string())
 
 ### 2. EDA (Exploratory Data Analysis) ###
 
-# dependent variable, 'RA' EDA
+# dependent variable, 'RA', EDA
 fig, axes = plt.subplots(1, 2, figsize=(20, 8))
 
 sns.histplot(pitching_df['RA'], kde=True, ax=axes[0])
@@ -178,7 +178,7 @@ plt.show()
 
 # independent variables EDA
 # histograms
-cols = df.drop(['RA'], axis=1)
+cols = list(df.iloc[:, df.columns != 'RA'])
 fig, axes = plt.subplots(3, 3, figsize=(15, 15))
 
 for col, ax in zip(cols, axes.flatten()[:8]):
