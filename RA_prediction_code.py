@@ -84,7 +84,14 @@ print(pitching_df.describe().to_string())
 # check invalid '0' values
 print('------- Number of 0 values in each Data Variable -------')
 print(pitching_df[pitching_df == 0].count())
-# looking at data ranges, the 2 '0' values in 'FIP_MINUS_ERA' data column seems reasonable
+
+cols_with0 = [col for col in pitching_df.columns if any(pitching_df[col] == 0)]
+
+# number of '0' values in each season
+seasonal_df = pitching_df.groupby('YEAR')
+seasonal_0cnt = seasonal_df[cols_with0].apply(lambda x: x[x == 0].count())
+print(seasonal_0cnt.to_string())
+# looking at the table above, the 2 '0' values in 'FIP_MINUS_ERA' data column seems reasonable
 # therefore, don't treat those 2 '0' values as invalid values
 
 # treat all the '0' values as missing values except 'FIP_MINUS_ERA' data feature
