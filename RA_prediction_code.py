@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn import preprocessing, linear_model, metrics
+from sklearn import linear_model, metrics
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.experimental import enable_iterative_imputer
@@ -84,11 +84,10 @@ print(pitching_df.describe().to_string())
 # check invalid '0' values
 print('------- Number of 0 values in each Data Variable -------')
 print(pitching_df[pitching_df == 0].count())
-
-# looking at data ranges, the 2 '0' values in 'FIP_MINUS_ERA' data feature seems valid
+# looking at data ranges, the 2 '0' values in 'FIP_MINUS_ERA' data column seems reasonable
 # therefore, don't treat those 2 '0' values as invalid values
 
-# treat all the '0' values as missing values except 'FIP_MINUS_ERA' data
+# treat all the '0' values as missing values except 'FIP_MINUS_ERA' data feature
 pitching_df = pitching_df.drop(['FIP_MINUS_ERA'], axis=1).replace(0, np.nan)
 print(pitching_df.isnull().sum())
 
@@ -143,7 +142,6 @@ ax.set_title('Correlation Matrix')
 plt.show()
 
 print(corrMatrix.to_string())
-
 
 # feature selection: filter method
 # drop independent variables if its correlation between other independent variables are higher than 0.95
@@ -238,6 +236,7 @@ plt.show()
 
 
 ### 4. Multiple Linear Regression with feature selection
+# check multicollinearity
 df = pd.concat([pitching_df['RA'], scaled_df], axis=1)
 
 x = df.iloc[:, df.columns != 'RA']
