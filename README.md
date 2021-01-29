@@ -14,7 +14,7 @@
 ### 1. Intro
 In the [previous project](https://github.com/shk204105/MLB_Team_RunsScored_Prediction), I briefly talked about how a team wins in baseball. The first part of winning in baseball is **Runs Scored (RS)** and what makes that **RS** was dealt with in the previous project using linear regression models.
 
-However **RS** is not the only part of winning in baseball. While a team must score runs, it also has to prevent your opponents from scoring runs (at least allow runs less than it scores) to win a game. This is indicated as **Runs Allowed**. So in this project, I analyzed how a team can allow runs as less as possible.
+However **RS** is not the only part of winning in baseball. While a team must score runs, it also has to prevent its opponents from scoring runs (at least allow runs less than it scores) to win a game. This is indicated as **Runs Allowed**. So in this project, I analyzed how a team can allow runs as less as possible.
 
 ### 2. Metadata
 | **Metadata** | **Information** |
@@ -27,68 +27,69 @@ However **RS** is not the only part of winning in baseball. While a team must sc
 | :-----------: | :-----------: |
 | ***LVL*** | Level of Play: MLB (the major league) |
 | ***YEAR*** | Each year refers to corresponding seasons |
-| ***TM*** | All 30 Major League Baseball Teams |
-| ***IP*** | Number of games played in the corresponding season |
+| ***TEAM*** | All 30 Major League Baseball Teams |
+| ***IP*** | [Innings Pitched](http://m.mlb.com/glossary/standard-stats/innings-pitched) |
 | ***PA*** | [Plate Appearance](http://m.mlb.com/glossary/standard-stats/plate-appearance) |
-| ***R*** | [At-bat](http://m.mlb.com/glossary/standard-stats/at-bat) |
-| ***ERA*** | [Runs Scored](http://m.mlb.com/glossary/standard-stats/run) |
-| ***FIP*** | [Total Bases](http://m.mlb.com/glossary/standard-stats/total-bases) |
-| ***cFIP*** | [Hit](http://m.mlb.com/glossary/standard-stats/hit) |
-| ***cFIP_START*** | [Batting Average](http://m.mlb.com/glossary/standard-stats/batting-average) |
-| ***cFIP_RELIEF*** | [On-base Percentage](http://m.mlb.com/glossary/standard-stats/on-base-percentage) |
-| ***FIP_MINUS_ERA*** | [Slugging Percentage](http://m.mlb.com/glossary/standard-stats/slugging-percentage) |
-| ***SO9*** | [On-base Plus Slugging](http://m.mlb.com/glossary/standard-stats/on-base-plus-slugging) |
-| ***BB9*** | [Isolated Power](http://m.mlb.com/glossary/advanced-stats/isolated-power) |
-| ***SO/BB*** | [Home run](http://m.mlb.com/glossary/standard-stats/home-run) |
-| ***HR9*** | [Home Run Rate](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=344) |
-| ***oppAVG*** | [Walk](http://m.mlb.com/glossary/standard-stats/walk) |
-| ***oppOBP*** | [Walk Rate](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=283) |
-| ***oppSLG*** | [Strikeout](http://m.mlb.com/glossary/standard-stats/strikeout) |
-| ***oppOPS*** | [Strikeout Rate](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=349) |
-| ***WHIP*** | [Strikeout-to-Walk ratio (equivalently K/BB)](http://m.mlb.com/glossary/advanced-stats/strikeout-to-walk-ratio) |
-| ***DRA*** | [Stolen Base](http://m.mlb.com/glossary/standard-stats/stolen-base) |
-| ***DRA-*** | [Caught Stealing](http://m.mlb.com/glossary/standard-stats/caught-stealing) |
-| ***DRA_START*** | [Stolen-base Percentage](http://m.mlb.com/glossary/standard-stats/stolen-base-percentage) |
-| ***DRA_RELIEF*** | [Deserved Runs Created for a batter](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=696) |
-| ***PWARP*** | [Deserved Runs Above Average](https://legacy.baseballprospectus.com/glossary/index.php?search=DRC_RAA) |
+| ***R*** | [Runs Allowed](http://m.mlb.com/glossary/standard-stats/run) |
+| ***ERA*** | [Earned Run Average](http://m.mlb.com/glossary/standard-stats/earned-run-average) |
+| ***FIP*** | [Fielding Independent Pitching](http://m.mlb.com/glossary/advanced-stats/fielding-independent-pitching) |
+| ***cFIP*** | [Contextual Fiedling Independent Pitching](https://legacy.baseballprospectus.com/glossary/index.php?search=cFIP) |
+| ***cFIP_START*** | [cFIP for Starting Pitchers](https://legacy.baseballprospectus.com/glossary/index.php?search=cFIP) |
+| ***cFIP_RELIEF*** | [cFIP for Relief Pitchers](https://legacy.baseballprospectus.com/glossary/index.php?search=cFIP) |
+| ***FIP_MINUS_ERA*** | [ERA Subtracted from FIP ](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=630) |
+| ***SO9*** | [Strikeouts Per 9 Innings](http://m.mlb.com/glossary/advanced-stats/strikeouts-per-nine-innings) |
+| ***BB9*** | [Walks Per 9 Innings](http://m.mlb.com/glossary/advanced-stats/walks-per-nine-innings) |
+| ***SO/BB*** | [Strikeout-to-Walk Ratio](http://m.mlb.com/glossary/advanced-stats/strikeout-to-walk-ratio) |
+| ***HR9*** | [Home Runs Per 9 Innings](http://m.mlb.com/glossary/advanced-stats/home-runs-per-nine-innings) |
+| ***oppAVG*** | Batting Average Allowed by a Pitcher |
+| ***oppOBP*** | On-base Percentage Allowed by a Pitcher |
+| ***oppSLG*** | Slugging Percentage Allowed by a Pitcher |
+| ***oppOPS*** | On-base Plus Slugging Allowed by a Pitcher |
+| ***WHIP*** | [Walk and Hits Per Inning Pitched](http://m.mlb.com/glossary/standard-stats/walks-and-hits-per-inning-pitched) |
+| ***DRA*** | [Deserved Run Average](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=668) |
+| ***DRA-*** | [DRA-Minus](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=695) |
+| ***DRA_START*** | [DRA for Starting Pitchers](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=668) |
+| ***DRA_RELIEF*** | [DRA for Relief Pitchers](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=668) |
+| ***PWARP*** | [Pitcher Wins Above Replacement Player](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=592) |
 
 ### 3. Data Cleaning
-- Combined 10 different datasets (2010-2019 Season Batting datasets).
+- Combined 10 different datasets (2010-2019 Season Pitching datasets).
 - Dropped an unnecessary column made when combining datasets (Column: **'#'**).
-- Renamed **'R'** data feature as **'RS'** for clarity.
-- Eliminated commas in some data features and convert their data types from **integer** into **numeric** (**'PA'**, **'AB'**, **'H'**, **'SO'**).
-- Confirmed that there are no missing values and duplicates.
-- Dropped categorical variables (**LG** and **TEAM**), as they are not related to our analysis.
+- Renamed **'R'** data feature as **'RA'** for clarity.
+- Eliminated commas in some data features and convert their data types from **integer** into **numeric** (**IP**, **PA**).
+- Detected invalid **0** values in some data features (**cFIP_START**, **cFIP_RELIEF**, **SO/BB**, **oppAVG**, **oppOBP**, **oppSLG**, **oppOPS**, **DRA_START**, **DRA_RELIEF**).
+- Treated these invalid values as missing values and replaced them with projected values based on linear regression result (**IterativeImputer**). 
+- Dropped categorical variables (**LVL** and **TEAM**), as they are irrelevant to this analysis.
 
 ### 4. EDA (Exploratory Data Analysis)
-***4-1. RS EDA***
-![RS Histogram:Probability Plot](https://user-images.githubusercontent.com/67542497/105629056-1cfd7a00-5e84-11eb-9166-ebbd49161ed1.png)
-<img src="https://user-images.githubusercontent.com/67542497/105629055-1c64e380-5e84-11eb-94bb-60ff4948660d.png" width="500" height="500">
+***4-1. RA EDA***
+![](https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/RA%20Histogram:Q-Q%20Plot.png)
+<img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Yearly%20Changes%20in%20RA.png" width="500" height="500">
 
-- **RS** Skewness: 0.35264844525853095
-- **RS** Kurtosis: 0.061150254394042314
+- **RA** Skewness: 0.38340975864973814
+- **RA** Kurtosis: -0.13976152269512854
 
-According to the histogram and probability plot above, **RS** seems to follow a normal distribution. The skewness of 0.35 and kurtosis of 0.06 also indicate that team **RS** data is normallly distributed. Likewise, the boxplots above show that team **RS** has been normally distributed over the last 10 seasons with few outliers.
+According to the histogram and probability plot above, **RA** seems to follow a normal distribution. The skewness of 0.38 and kurtosis of -0.14 also indicate that team **RA** data is normallly distributed. Likewise, the boxplots above show that team **RA** has been normally distributed over the last 10 seasons with few outliers.
 
 
 ***4-2. Feature Selection: Filter Method***
 
-<img src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/Filtered%20Correlation%20Matrix.png" width="500" height="500">
+<img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Filtered%20Correlatoin%20Matrix.png" width="500" height="500">
 
 | ***Correlation*** | **RS** | **PA** | **TB** | **OBP** | **ISO** | **DRC+** | **DRAA** | **BWARP** |
 | :-----------: | :-----------: | :-----------: | :-----------: | :-----------: | :-----------: | :-----------: | :-----------: | :-----------: |
 | **RS** | 1.0 | 0.739 | 0.922 | 0.829 | 0.812 | 0.751 | 0.806 | 0.780 |
 
-Initially, I had 24 independent variables. To avoid multicollinearity, I filtered some of them based on (i) correlation between each **independent** variable, and (ii) correlation between those filtered features and the **dependent** variable, **RS**. As a result, I ended up **7** independent varaibles as indicated in the correlation matrix above. 
+Initially, I had 23 independent variables. To avoid multicollinearity, I filtered some of them based on (i) correlation between each **independent** variable, and (ii) correlation between those filtered features and the **dependent** variable, **RA**. As a result, I ended up **7** independent varaibles as indicated in the correlation matrix above. 
 
 
 ***4-3. Filtered Independent Variables EDA***
 
-<img src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/Histogram.png" width="800" height="800">
+<img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Histogram.png" width="800" height="800">
 
 According to the histograms of each independent variable above, all the variables are normally distributed.
 
-<img src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/Scatter%20plot.png" width="600" height="600">
+<img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Scatter%20Plot.png" width="600" height="600">
 
 Scatter plots also depict that there are reasonable linear trends between each independent variable and **RS** without notable outliers, and thus, it's safe to use the linear regression model.
 
@@ -98,7 +99,7 @@ Since the ranges of independent variables vary considerably, I scaled all the in
 
 The result of feature scaling is the following:
 
-<img src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/KDE%20plot.png" width="600" height="600">
+<img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/KDE%20Plot.png" width="600" height="600">
 
 
 ### 6. Multiple Linear Regression with Feature Selection
