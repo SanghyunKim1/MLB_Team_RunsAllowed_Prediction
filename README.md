@@ -113,11 +113,11 @@ Therefore, I used the wrapper method (**Recursive Feature Elimination**) to find
 Through **RFE**, I got **HR9** and **WHIP** as independent variables and built a multiple linear regression.
 The result of the model is:
 
-<img width="601" alt="Multiple Linear Regression" src=""> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF2.png">
+<img width="601" alt="Multiple Linear Regression" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Multiple%20Linear%20Regression.png"> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF2.png">
 
 
 ### 7. Simple Linear Regression
-Apart from the multiple linear regression model, I also built a simple linear regression model. To find the sinlge best independent variable, I used the **SelectKBest** function. Based on F-statistics of each independent variable, **OPS** has beend selected as the best independent variable.
+Apart from the multiple linear regression model, I also built a simple linear regression model. To find the sinlge best independent variable, I used the **SelectKBest** function. Based on F-statistics of each independent variable, **ERA** has beend selected as the best independent variable.
 
 Furthermore, I also splitted data into training(70%) and test(30%) datasets for accuracy.
 
@@ -125,10 +125,26 @@ The result of the model is:
 
 | **Measurement** | **Score** | 
 | :-----------: | :-----------: |
-| ***Intercept*** | -752.3837394309697 |
-| ***Coefficient*** | 2009.36777208 |
-| ***R-squared*** | 0.9079557000049954 |
-| ***RMSE*** | 23.207166436311425 |
+| ***Intercept*** | 44.81409069091842 |
+| ***Coefficient*** | 163.46870405 |
+| ***R-squared*** | 0.977594476807553 |
+| ***RMSE*** | 12.37869911916763 |
+
+As indicated in the table above, the result was TOO accurate yielding an R-squared of 0.978 and RMSE of  12.38. Such a result seems to occur because **ERA** and **RA** are almost indentical stats except the fact that **ERA (Earned Run Average)** doesn't take into account runs allowed recorded via *errors or passed plays*, while **RA** does.
+
+In modern baseball, the quality of fielding is so outstanding compared to the past day's baseaball (imagine ball games in the 1890s or 1910s). Therefore, the odds of scoring runs with the aids of errors became so low these days. This is proven by *the correlation of 0.99* between these two stats. These two stats are almost indentical.
+
+So although **ERA** is the best single predictor of a team's **RA**, I believe there's no point in spending time on building machine learning algorithm to just predict **RA**, if we already have **ERA**. Thus, I got the second best predictor, **WHIP**, again using **skelearn's SelectKBest**.
+
+With **WHIP** as an independent variable the result of this model is:
+
+| **Measurement** | **Score** | 
+| :-----------: | :-----------: |
+| ***Intercept*** | -465.10977839397117 |
+| ***Coefficient*** | 893.24724699 |
+| ***R-squared*** | 0.7837067997149497 |
+| ***RMSE*** | 38.460851534999485 |
+
 
 
 ### 8. Model Validation
@@ -140,37 +156,31 @@ To validate both multiple and simple linear regression models, I used the K-Fold
 
 | **Measurement** | **Score** | 
 | :-----------: | :-----------: |
-| ***Mean R-squared*** | 0.8584381525775473 |
-| ***Mean RMSE*** | 24.92574073069298 |
+| ***Mean R-squared*** | 0.8905666784838221 |
+| ***Mean RMSE*** | 24.9749012355517 |
 
 ***8-2. Simple Linear Regression model validtion***
 
 | **Measurement** | **Score** | 
 | :-----------: | :-----------: |
-| ***Mean R-squared*** | 0.8610824571143239 |
-| ***Mean RMSE*** | 24.37742789357559 |
+| ***Mean R-squared*** | 0.7360878269961807 |
+| ***Mean RMSE*** | 38.90144641675336 |
 
-Accoring to the results above, the simple linear regression model (x:**OPS** / y:**RS**) showed a slightly higher R-squared than the multiple linear regression model (x:**TB**, **OBP** / y:**RS**).
-However, the differences in the R-squared between those two models are marginal, and as both models don't overfit data, it's safe to use either model to predict team **RS**.
+Accoring to the results above, the simple linear regression model (x: **WHIP** / y:**RA**) also seems to perform well. However, the accuracy is not as high as that of the multiple linear regression model (x: **HR9**, **WHIP** / y:**RA**).
 
 
 ### 9. Conclusion
 
-Comparing those two models through 10-Fold Cross Validation, although the simple linear regression seems more accurate, the differences between these two models seem marginal.
+Comparing those two models through 10-Fold Cross Validation, although **WHIP** alone is a good measure when predicting a team's **RA**, it'll result a much better result to use **HR9** and **WHIP** together for a team's **RA** prediction given the mean R-squared of **0.891** and RMSE of **24.97**.
 
-One possible reason for such a result is because these two predictors (**OPS** vs **TB + OBP**) measure similar things in baseball. For those who are not familiar with baseball, let me briefly talk about what these three stats measure in baeball.
+As I mentioned in [the previous project](https://github.com/shk204105/MLB_Team_RunsScored_Prediction), a team must reach bases as many as possible to produce runs. If you're not able to reach bases, then how would you score? So if we think about it from the pitching's perspective. As a pitcher (or a team) your goal is to prevent your opponents from scoring as many as possible. How? The answer is simple. You must prevent your opponents from reaching bases by allowing as less hits, bases on balls, or hit-by-pitches as you can.
 
+And such a job is measured by a single statistic, [WHIP](http://m.mlb.com/glossary/standard-stats/walks-and-hits-per-inning-pitched). It measures how well a pitcher has kept runners off the basepaths and is calculated by the total number of hits and walks divided by his total innings pitched. In other words, it represents how may batters a pitcher allows to reach bases per innings pitched. (e.g. a WHIP of 0.84 means that this pitcher allows 0.84 hitters to reach bases per innings he pitched)
 
-Frist, [**TB**](http://m.mlb.com/glossary/standard-stats/total-bases) measures total number of bases gained through hits. It assigns **1 total base** to a single, **2 total bases** to a double, **3 total bases** to a triple and **4 total bases** to a home run. Therefore, a team's TB shows how many **singles** as well as **extra hits (doubles + triples + home runs)**, which possibly advance runners on base, have been gained throughout the season by that team.
+Even though the ability to keep runners off the baspaths is still important, it seems that preventing opponent batters from reaching bases is not enough not to give up runs. There's one more thing you should do to give up as less runs as possible given my analysis. *Not allowing home runs*.
 
-Second, [**OBP**](http://m.mlb.com/glossary/standard-stats/on-base-percentage) (On-Base Percentage) measures how *often* a batter reaches bases (e.g an **OBP** of 0.400 means that this batter has reached bases four times in 10 plate appearances). It includes *Hits (singles + extra hits)*, *Base-on-Balls* and *Hit-by-Pitches*. While **TB** measures total number of bases gained, **OBP** measures the efficiency of a batter in terms of the ability to reach bases.
+In the 2010s (especially since the 2016 season), the way a team produces runs has changed compared to the past days. Somehow, both the total number of **home runs** a team records per season, and the total number of runs created via **home runs** has inclined (see this [article](https://calltothepen.com/2019/08/29/mlb-factors-contributing-increased-home-run-rates/)).
 
-Finally, [**OPS**](http://m.mlb.com/glossary/standard-stats/on-base-plus-sluggin) is the sum of **OBP** and [**SLG**](http://m.mlb.com/glossary/standard-stats/slugging-percentage). **SLG** here refers to *Slugging Percentage*. This **SLG** shows the total number of bases (**TB**) a hitter records *per at-bat*. As **SLG** doesn't include *Base-on-Balls* and *Hit-by-Pitches* (these two are measured by **OBP**), if we combine **OBP** and **SLG** together, we get a single statistic that measures similar things as **TB + OBP** does.
+As the way of playing the ball game changes, teams must be used to it. Therefore, from a pitching's perspective, the ability of not allowing home runs has become important these days. And such a job is measured by **HR9**, *the number of home runs allowed per 9 innings pitched*. 
 
-The nature of baseball again. As I mentioned at the beginning of this project, a team should outscore its opponents to win a game in baseball. To do so, that team has to score and it's indicated as **Runs Scored (RS)**, the dependent variable. Then how does a team score runs?
-
-Simple. To score runs in baseball, a team's batters must reach bases (i.e. become runners on bases) and other batters must advance these runners on bases to drive runs. This is how a team scores in baseball.
-
-And this is what either **OPS** or **TB + OBP** measure, (a) the ability to reach bases, and (b) the ability to advance runners on bases to drive runs.
-
-Given this fact, there's no wonder that those two different models yield the similar level of accuracy. Bothe independet variables measure similar things. Therefore, we get the similar result. Although the simple linear regression model where the independent variable is **OPS** yields a marginally more accurate result, I believe we'd get similar results no matter which one we use to predict team **RS**.
+To sum, if a team allows its opponents to reach bases as less as possible, and also if it allows as less home runs as it can, such a team will give up as less runs as possible. This seems to be proven through this analysis: **RA** prediction.
