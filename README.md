@@ -171,7 +171,7 @@ Accoring to the results above, the simple linear regression model (x: **WHIP** /
 
 ### 9. Conclusion
 
-Comparing those two models through 10-Fold Cross Validation, although **WHIP** alone is a good measure when predicting a team's **RA**, it'll result a much better result to use **HR9** and **WHIP** together a team's **RA** prediction given the mean R-squared of **0.891** and RMSE of **24.97**.
+Comparing those two models through 10-Fold Cross Validation, although **WHIP** alone is a good measure when predicting a team's **RA**, it'll result a much better result to use **HR9** and **WHIP** together for a team's **RA** prediction given the mean R-squared of **0.891** and RMSE of **24.97**.
 
 As I mentioned in [the previous project](https://github.com/shk204105/MLB_Team_RunsScored_Prediction), a team must reach bases as many as possible to produce runs. If you're not able to reach bases, then how would you score? So if we think about it from the pitching's perspective. As a pitcher (or a team) your goal is to prevent your opponents from scoring as many as possible. How? The answer is simple. You must prevent your opponents from reaching bases by allowing as less hits, bases on balls, or hit-by-pitches as you can.
 
