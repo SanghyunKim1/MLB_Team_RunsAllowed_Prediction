@@ -113,7 +113,7 @@ Therefore, I used the wrapper method (**Recursive Feature Elimination**) to find
 Through **RFE**, I got **HR9** and **WHIP** as independent variables and built a multiple linear regression.
 The result of the model is:
 
-<img width="601" alt="Multiple Linear Regression" src=""> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF2.png">
+<img width="601" alt="Multiple Linear Regression" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Multiple%20Linear%20Regression.png"> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF2.png">
 
 
 ### 7. Simple Linear Regression
