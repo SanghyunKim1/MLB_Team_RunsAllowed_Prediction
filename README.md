@@ -105,15 +105,15 @@ The result of feature scaling is the following:
 ### 6. Multiple Linear Regression with Feature Selection
 With all the independent variables filtered above, I built a multiple linear regression model to check the degree of multicollinearity based on **VIF**.
 
-<img width="207" alt="VIF" src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/VIF1.png">
+<img width="207" alt="VIF" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF1.png">
 
 According to the table above, there seems to be multicollinearity in the model because independent variables are highly corrleated one another.
 Therefore, I used the wrapper method (**Recursive Feature Elimination**) to find the best two independent variables.
 
-Through **RFE**, I got **TB** and **OBP** as independent variables and built a multiple linear regression.
+Through **RFE**, I got **HR9** and **WHIP** as independent variables and built a multiple linear regression.
 The result of the model is:
 
-<img width="601" alt="Multiple Linear Regression" src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/Multiple%20Linear%20Regression.png"> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsScored_Prediction/blob/master/images/VIF2.png">
+<img width="601" alt="Multiple Linear Regression" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Multiple%20Linear%20Regression.png"> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF2.png">
 
 
 ### 7. Simple Linear Regression
