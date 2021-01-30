@@ -351,6 +351,46 @@ print(metrics.r2_score(y_test, y_predict))
 print('------- RMSE -------')
 mse = metrics.mean_squared_error(y_test, y_predict)
 print(sqrt(mse))
+# since the accuracy of the model is too high, find the second best predictor
+
+# feature selection for the second best predictor
+x = pitching_df.drop(['ERA', 'RA'], axis=1)
+y = pitching_df['RA']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+
+selector = SelectKBest(score_func=f_regression, k=1)
+selected_xTrain = selector.fit_transform(x_train, y_train)
+selected_xTest = selector.transform(x_test)
+
+all_cols = x.columns
+selected_mask = selector.get_support()
+selected_var = list(all_cols[selected_mask].values)
+
+print('Selected Second Best Feature: {}'.format(selected_var))
+
+# simple linear regression (x: 'WHIP' / y:'RA')
+x = pitching_df[selected_var]
+y = pitching_df['RA']
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+
+lm = linear_model.LinearRegression().fit(x_train, y_train)
+y_predict = lm.predict(x_test)
+
+print('------- Simple Linear Regression -------')
+print('------- Intercept -------')
+print(lm.intercept_)
+
+print('------- Coefficient -------')
+print(lm.coef_)
+
+print('------- R-squared -------')
+print(metrics.r2_score(y_test, y_predict))
+
+print('------- RMSE -------')
+mse = metrics.mean_squared_error(y_test, y_predict)
+print(sqrt(mse))
 
 
 
