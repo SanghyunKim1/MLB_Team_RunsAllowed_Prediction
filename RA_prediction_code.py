@@ -117,7 +117,7 @@ fig, axes = plt.subplots(1, 2, figsize=(20, 8))
 sns.histplot(pitching_df['RA'], kde=True, ax=axes[0])
 axes[0].set_title('Team RA Histogram')
 
-axes[1] = stats.probplot(pitching_df['RA'], plot=plt)
+stats.probplot(pitching_df['RA'], plot=axes[1])
 plt.title('Team RA Q-Q Plot')
 
 plt.show()
