@@ -172,12 +172,12 @@ print('Filtered Features: {}'.format(filtered_vars))
 df = df[filtered_vars]
 
 # new correlation matrix for selected data features
-corr = df.corr()
+corrMatrix = df.corr()
 fig, ax = plt.subplots(figsize=(10, 10))
 
-sns.heatmap(corr, square=True, annot=True, annot_kws={'size':10}, cmap='YlGnBu',
+sns.heatmap(corrMatrix, square=True, annot=True, annot_kws={'size':10}, cmap='YlGnBu',
             vmax=1, vmin=-1, center=0,
-            xticklabels=corr.columns, yticklabels=corr.columns, ax=ax)
+            xticklabels=corrMatrix.columns, yticklabels=corrMatrix.columns, ax=ax)
 ax.set_title('Correlation Matrix')
 
 plt.show()
