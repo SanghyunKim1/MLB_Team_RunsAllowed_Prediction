@@ -2,21 +2,32 @@
 
 ## Content
 1. Intro: The Nature of Baseball
-2. Metadata
-3. Data Cleaning
-4. EDA (Exploratory Data Analysis)
-5. Feature Scaling
-6. Multiple Linear Regression with Feature Selection
-7. Simple Linear Regression
-8. Model Validation
-9. Conclusion
+2. Technologies
+3. Metadata
+4. Data Cleaning
+5. EDA (Exploratory Data Analysis)
+6. Feature Scaling
+7. Multiple Linear Regression with Feature Selection
+8. Simple Linear Regression
+9. Model Validation
+10. Conclusion
 
 ### 1. Intro
 In the [previous project](https://github.com/shk204105/MLB_Team_RunsScored_Prediction), I briefly talked about how a team wins in baseball. The first part of winning in baseball is **Runs Scored (RS)** and what makes that **RS** was dealt with in the previous project using linear regression models.
 
 However **RS** is not the only part of winning in baseball. While a team must score runs, it also has to prevent its opponents from scoring runs (at least allow runs less than it scores) to win a game. This is indicated as **Runs Allowed**. So in this project, I analyzed how a team can allow runs as less as possible.
 
-### 2. Metadata
+### 2. Techonologies
+- Python 3.8
+  * Pandas - version 1.2.2
+  * Numpy - version 1.20.1
+  * matplotlib - version 3.3.4
+  * seaborn - version 0.11.1
+  * scikit-learn - version 0.24.1
+  * statsmodels - version 0.12.2
+  * scipy - version 1.6.1
+
+### 3. Metadata
 | **Metadata** | **Information** |
 | :-----------: | :-----------: |
 | **Origin of Data** | [Baseball Prospectus](https://www.baseballprospectus.com) |
@@ -52,7 +63,7 @@ However **RS** is not the only part of winning in baseball. While a team must sc
 | ***DRA_RELIEF*** | [DRA for Relief Pitchers](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=668) |
 | ***PWARP*** | [Pitcher Wins Above Replacement Player](https://legacy.baseballprospectus.com/glossary/index.php?mode=viewstat&stat=592) |
 
-### 3. Data Cleaning
+### 4. Data Cleaning
 - Combined 10 different datasets (2010-2019 Season Pitching datasets).
 - Dropped an unnecessary column made when combining datasets (Column: **'#'**).
 - Renamed **'R'** data feature as **'RA'** for clarity.
@@ -61,8 +72,8 @@ However **RS** is not the only part of winning in baseball. While a team must sc
 - Treated these invalid values as missing values and replaced them with projected values based on linear regression result (**IterativeImputer**). 
 - Dropped categorical variables (**LVL** and **TEAM**), as they are irrelevant to this analysis.
 
-### 4. EDA (Exploratory Data Analysis)
-***4-1. RA EDA***
+### 5. EDA (Exploratory Data Analysis)
+***5-1. RA EDA***
 ![](https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/RA%20Histogram:Q-Q%20Plot.png)
 <img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Yearly%20Changes%20in%20RA.png" width="500" height="500">
 
@@ -72,7 +83,7 @@ However **RS** is not the only part of winning in baseball. While a team must sc
 According to the histogram and probability plot above, **RA** seems to follow a normal distribution. The skewness of 0.38 and kurtosis of -0.14 also indicate that team **RA** data is normallly distributed. Likewise, the boxplots above show that team **RA** has been normally distributed over the last 10 seasons with few outliers.
 
 
-***4-2. Feature Selection: Filter Method***
+***5-2. Feature Selection: Filter Method***
 
 <img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Filtered%20Correlatoin%20Matrix.png" width="500" height="500">
 
@@ -83,7 +94,7 @@ According to the histogram and probability plot above, **RA** seems to follow a 
 Initially, I had 23 independent variables. To avoid multicollinearity, I filtered some of them based on (i) correlation between each **independent** variable, and (ii) correlation between those filtered features and the **dependent** variable, **RA**. As a result, I ended up **7** independent varaibles as indicated in the correlation matrix above. 
 
 
-***4-3. Filtered Independent Variables EDA***
+***5-3. Filtered Independent Variables EDA***
 
 <img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Histogram.png" width="800" height="800">
 
@@ -94,7 +105,7 @@ According to the histograms of each independent variable above, all the variable
 Scatter plots also depict that there are reasonable linear trends between each independent variable and **RS** without notable outliers, and thus, it's safe to use the linear regression model.
 
 
-### 5. Feature Scaling
+### 6. Feature Scaling
 Since the ranges of independent variables vary considerably, I scaled all the independent variables. As all the data attributes have normal distributions with few outliers, I used ***StandardScaler*** to scale them.
 
 The result of feature scaling is the following:
@@ -102,7 +113,7 @@ The result of feature scaling is the following:
 <img src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/KDE%20Plot.png" width="600" height="600">
 
 
-### 6. Multiple Linear Regression with Feature Selection
+### 7. Multiple Linear Regression with Feature Selection
 With all the independent variables filtered above, I built a multiple linear regression model to check the degree of multicollinearity based on **VIF**.
 
 <img width="207" alt="VIF" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF1.png">
@@ -116,7 +127,7 @@ The result of the model is:
 <img width="601" alt="Multiple Linear Regression" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/Multiple%20Linear%20Regression.png"> <img width="193" alt="VIF2" src="https://github.com/shk204105/MLB_Team_RunsAllowed_Prediction/blob/master/images/VIF2.png">
 
 
-### 7. Simple Linear Regression
+### 8. Simple Linear Regression
 Apart from the multiple linear regression model, I also built a simple linear regression model. To find the sinlge best independent variable, I used the **SelectKBest** function. Based on F-statistics of each independent variable, **ERA** has beend selected as the best independent variable.
 
 Furthermore, I also splitted data into training(70%) and test(30%) datasets for accuracy.
@@ -147,19 +158,19 @@ With **WHIP** as an independent variable the result of this model is:
 
 
 
-### 8. Model Validation
+### 9. Model Validation
 <img src="https://user-images.githubusercontent.com/67542497/105632704-f1848a80-5e97-11eb-8b69-f19913f1d3be.png" width="500" height="400">
 
 To validate both multiple and simple linear regression models, I used the K-Fold Cross Validation method, where the number of folds is 10.
 
-***8-1. Multiple Linear Regression model validtion***
+***9-1. Multiple Linear Regression model validtion***
 
 | **Measurement** | **Score** | 
 | :-----------: | :-----------: |
 | ***Mean R-squared*** | 0.8905666784838221 |
 | ***Mean RMSE*** | 24.9749012355517 |
 
-***8-2. Simple Linear Regression model validtion***
+***9-2. Simple Linear Regression model validtion***
 
 | **Measurement** | **Score** | 
 | :-----------: | :-----------: |
@@ -169,7 +180,7 @@ To validate both multiple and simple linear regression models, I used the K-Fold
 Accoring to the results above, the simple linear regression model (x: **WHIP** / y:**RA**) also seems to perform well. However, the accuracy is not as high as that of the multiple linear regression model (x: **HR9**, **WHIP** / y:**RA**).
 
 
-### 9. Conclusion
+### 10. Conclusion
 
 Comparing those two models through 10-Fold Cross Validation, although **WHIP** alone is a good measure when predicting a team's **RA**, it'll result a much better result to use **HR9** and **WHIP** together for a team's **RA** prediction given the mean R-squared of **0.891** and RMSE of **24.97**.
 
