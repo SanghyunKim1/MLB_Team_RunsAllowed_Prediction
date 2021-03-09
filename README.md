@@ -69,7 +69,8 @@ However **RS** is not the only part of winning in baseball. While a team must sc
 - Renamed **'R'** data feature as **'RA'** for clarity.
 - Eliminated commas in some data features and convert their data types from **integer** into **numeric** (**IP**, **PA**).
 - Detected invalid **0** values in some data features (**cFIP_START**, **cFIP_RELIEF**, **SO/BB**, **oppAVG**, **oppOBP**, **oppSLG**, **oppOPS**, **DRA_START**, **DRA_RELIEF**).
-- Treated these invalid values as missing values and replaced them with projected values based on linear regression result (**IterativeImputer**). 
+- By looking at the 0 values, I noticed that these invalid values were recored in specific seasons because such data atrributes didn't exist in that corresponding seasson. In other words, such invalid values are considered **Missing At Random (MAR)**.
+- Treated these invalid values as missing values and replaced them with projected values based on linear regression result using **IterativeImputer**. 
 - Dropped categorical variables (**LVL** and **TEAM**), as they are irrelevant to this analysis.
 
 ### 5. EDA (Exploratory Data Analysis)
