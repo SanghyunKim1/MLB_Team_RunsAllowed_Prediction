@@ -63,19 +63,13 @@ print(pitching_df.dtypes)
 # total memory usage after data conversion
 print("Total memory usage after : {}".format(pitching_df.memory_usage(deep = True).sum()))
 
-# # convert 'IP' and 'PA' data types from categorical data into numeric data
-# pitching_df[cols] = pitching_df[cols].apply(pd.to_numeric)
-#
-# # drop categorical variables as we're not going to use them to predict 'RA'
-# pitching_df = pitching_df.select_dtypes(exclude='object')
-#
-# # check new data types
-# print(pitching_df.dtypes)
-#
-# # check missing values
-# print("Total Number of Missing Values in Pitching Data:")
-# print(pitching_df.isnull().sum())
-#
+# check missing values
+print("Total number of missing values in each column:")
+print(pitching_df.isnull().sum())
+
+# missing data visualization
+
+
 # # check duplicates
 # print("Total Number of Duplicates in Pitching Data: {}".format(pitching_df.duplicated().sum()))
 #
