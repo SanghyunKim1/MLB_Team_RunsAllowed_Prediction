@@ -36,25 +36,33 @@ for file in data_files:
 
 print(pitching_df.head().to_string())
 
-# # 1. Data Cleaning
-# # drop unnecessary columns
-# pitching_df.drop(['#'], axis=1, inplace=True)
-#
-# # rename specific column names
-# pitching_df.rename(columns={'R': 'RA'}, inplace=True)
-#
-# # check data types
-# print(pitching_df.dtypes)
-#
-# # categorical data
-# obj_cols = list(pitching_df.select_dtypes(include='object').columns)
-# print(pitching_df[obj_cols].head())
-#
-# # remove commas in 'IP' and 'PA' data
-# cols = ['IP', 'PA']
-# pitching_df[cols] = pitching_df[cols].replace(',', '', regex=True)
-# print(pitching_df[cols].head())
-#
+# 1. Data Cleaning
+# remove an unnecessary column
+pitching_df.drop("Unnamed: 0", axis = 1, inplace = True)
+
+# rename specific columns for clarity
+pitching_df.rename(columns = {"R": "RA"}, inplace = True)
+
+# check data types
+print(pitching_df.dtypes)
+
+# remove % signs
+pitching_df.replace("%", "", regex = True, inplace = True)
+print(pitching_df.head().to_string())
+
+# convert data types
+print("Total memory usage before: {}".format(pitching_df.memory_usage(deep = True).sum()))
+
+num_cols = ["LOB%", "GB%", "HR/FB", "Swing%", "Barrel%"]
+pitching_df[num_cols] = pitching_df[num_cols].apply(pd.to_numeric)
+pitching_df["Team"] = pitching_df["Team"].astype("category")
+
+# check data types again
+print(pitching_df.dtypes)
+
+# total memory usage after data conversion
+print("Total memory usage after : {}".format(pitching_df.memory_usage(deep = True).sum()))
+
 # # convert 'IP' and 'PA' data types from categorical data into numeric data
 # pitching_df[cols] = pitching_df[cols].apply(pd.to_numeric)
 #
