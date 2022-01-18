@@ -64,8 +64,17 @@ print(pitching_df.dtypes)
 print("Total memory usage after : {}".format(pitching_df.memory_usage(deep = True).sum()))
 
 # check missing values
-print("Total number of missing values in each column:")
-print(pitching_df.isnull().sum())
+print("Total number of missing values in each column")
+missing_val_num = pitching_df.isnull().sum()
+print(missing_val_num)
+
+# compute the missing % of data features that contain any missing values
+missing_cols = list(pitching_df.columns[pitching_df.isnull().any()])
+print("Missing %")
+print((missing_val_num[missing_cols] / len(pitching_df) * 100).round(2))
+# all these data features with any missing values are missing because they weren't recorded
+
+print(pitching_df.corr().to_string())
 
 # missing data visualization
 
